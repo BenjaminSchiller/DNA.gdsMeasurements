@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="all" name="all">
+    <target name="all" depends="measurement,aggregation"/>
+    <target name="measurement">
+        <jar destfile="measurement.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="dna.gds.measurement.Measurement"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="/Users/benni/TUD/Projects/ArgList/bin"/>
+            <fileset dir="../java/bin"/>
+            <fileset dir="../../DNA/config"/>
+            <fileset dir="../../DNA/bin"/>
+            <zipgroupfileset dir="../../DNA/lib/" includes="**/*.jar" />
+        </jar>
+    </target>
+    <target name="aggregation">
+        <jar destfile="aggregation.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="dna.gds.measurement.Aggregation"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="/Users/benni/TUD/Projects/ArgList/bin"/>
+            <fileset dir="../java/bin"/>
+            <fileset dir="../../DNA/bin"/>
+        </jar>
+    </target>
+</project>
