@@ -81,8 +81,7 @@ For each script, we simple list the possible arguments in the hope that they are
 
 ### `measurement.sh`
 
-	./measurement.sh ...
-
+	./measurement.sh $dataType $size $parallel $dataStructure $run
 
 ### `concat.sh`
 
@@ -131,7 +130,7 @@ For each script, we simple list the possible arguments in the hope that they are
 
 ### `plot.sh`
 
-	./plots.sh ...
+	./plots.sh $size $parallel
 
 
 

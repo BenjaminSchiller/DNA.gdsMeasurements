@@ -14,22 +14,15 @@ function measure {
 	fi
 }
 
-runs="50"
 
-size="100"
-parallel="10000"
-
-for dt in ${dataTypes[@]}; do
-	for ds in ${dataStructures[@]}; do
-		for run in $(seq 1 $runs); do
-			measure $dt $size $parallel $ds $run
-		done
-	done
-done
-
-./aggregation.sh Edge 100 10000
-./aggregation.sh Node 100 10000
-./fit.sh aggr 5 Edge 100 10000
-./fit.sh aggr 5 Node 100 10000
-
-./plot.sh
+if [[ $# = 5 ]]; then
+	dt=$1
+	size=$2
+	parallel=$3
+	ds=$4
+	run=$5
+	measure $dt $size $parallel $ds $run
+else
+	echo "expecting 5 arguments"
+	exit
+fi
