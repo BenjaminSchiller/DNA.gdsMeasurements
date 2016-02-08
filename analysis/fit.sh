@@ -25,7 +25,7 @@ function fitAggr {
 	# return 1
 
 	srcDir="$aggrDir/$dt/$size/$parallel/$ds"
-	dstDir="$aggrFitDir/$dt/$size/$parallel/$ds"
+	dstDir="$aggrFitDir-$valueIndex/$dt/$size/$parallel/$ds"
 
 	if [[ ! -d $dstDir ]]; then mkdir -p $dstDir; fi
 
@@ -36,12 +36,27 @@ function fitAggr {
 		dstFile1="$dstDir/$operation.fit"
 		dstFile2="$dstDir/$operation.functions"
 
-		echo "	p1(x) = a + b*x
-				p2(x) = c + d*x + e*x**2
-				p3(x) = f + g*log(x)
-				fit p1(x) '$srcFile' using 1:$valueIndex via a,b
-				fit p2(x) '$srcFile' using 1:$valueIndex via c,d,e
-				fit p3(x) '$srcFile' using 1:$valueIndex via f,g" | gnuplot &> $dstFile1
+		# x:y:stdDev=sqrt(var)
+		if [[ "$valueIndex" -gt "0" ]]; then
+			echo "	f1(x) = a + b*x
+					f2(x) = c + d*x + e*x**2
+					f3(x) = f + g*log(x)
+					f4(x) = h
+					fit f1(x) '$srcFile' using 1:$valueIndex:(sqrt(\$6)) via a,b
+					fit f2(x) '$srcFile' using 1:$valueIndex:(sqrt(\$6)) via c,d,e
+					fit f3(x) '$srcFile' using 1:$valueIndex:(sqrt(\$6)) via f,g
+					fit f4(x) '$srcFile' using 1:$valueIndex:(sqrt(\$6)) via h" | gnuplot &> $dstFile1
+		else
+			echo "	f1(x) = a + b*x
+					f2(x) = c + d*x + e*x**2
+					f3(x) = f + g*log(x)
+					f4(x) = h
+					fit f1(x) '$srcFile' using 1:$((valueIndex*-1)) via a,b
+					fit f2(x) '$srcFile' using 1:$((valueIndex*-1)) via c,d,e
+					fit f3(x) '$srcFile' using 1:$((valueIndex*-1)) via f,g
+					fit f4(x) '$srcFile' using 1:$((valueIndex*-1)) via h" | gnuplot &> $dstFile1
+		fi
+
 
 		a=$(value $dstFile1 'a ')
 		b=$(value $dstFile1 'b ')
@@ -58,8 +73,12 @@ function fitAggr {
 		g=$(value $dstFile1 'g ')
 		f3="$f + $g * log(x)"
 		q3=$(quality $dstFile1 3)
+
+		h=$(value $dstFile1 'h ')
+		f4="$h"
+		q4=$(quality $dstFile1 4)
 		
-		printf "$q1 $f1\n$q2 $f2\n$q3 $f3" | sort -n > $dstFile2
+		printf "$q1 $f1\n$q2 $f2\n$q3 $f3\n$q4 $f4" | sort -n > $dstFile2
 		echo "    $dstFile1 / $dstFile2"
 	done
 }
@@ -78,12 +97,14 @@ function fitX {
 		dstFile1="$dstDir/$operation.fit"
 		dstFile2="$dstDir/$operation.functions"
 
-		echo "	p1(x) = a + b*x
-				p2(x) = c + d*x + e*x**2
-				p3(x) = f + g*log(x)
-				fit p1(x) '$srcFile' using 1:$((index+2)) via a,b
-				fit p2(x) '$srcFile' using 1:$((index+2)) via c,d,e
-				fit p3(x) '$srcFile' using 1:$((index+2)) via f,g" | gnuplot &> $dstFile1
+		echo "	f1(x) = a + b*x
+				f2(x) = c + d*x + e*x**2
+				f3(x) = f + g*log(x)
+				f4(x) = h
+				fit f1(x) '$srcFile' using 1:$((index+2)) via a,b
+				fit f2(x) '$srcFile' using 1:$((index+2)) via c,d,e
+				fit f3(x) '$srcFile' using 1:$((index+2)) via f,g
+				fit f4(x) '$srcFile' using 1:$((index+2)) via h" | gnuplot &> $dstFile1
 
 		a=$(value $dstFile1 'a ')
 		b=$(value $dstFile1 'b ')
@@ -100,8 +121,12 @@ function fitX {
 		g=$(value $dstFile1 'g ')
 		f3="$f + $g * log(x)"
 		q3=$(quality $dstFile1 3)
+
+		h=$(value $dstFile1 'h ')
+		f4="$h"
+		q4=$(quality $dstFile1 4)
 		
-		printf "$q1 $f1\n$q2 $f2\n$q3 $f3" | sort -n > $dstFile2
+		printf "$q1 $f1\n$q2 $f2\n$q3 $f3\n$q4 $f4" | sort -n > $dstFile2
 		echo "    $dstFile1 / $dstFile2"
 	done
 }
@@ -158,7 +183,7 @@ if [[ $1 = "aggr" ]]; then
 		ds=$6
 		fitAggr $valueIndex $dt $size $parallel $ds
 	else
-		echo "fit aggr - invalid number of arguments ($#) (possible are: 2, 3, 5, 6)"
+		echo "fit aggr - invalid number of arguments ($#) (possible are: 2, 3, 5, 6)" >&2
 	fi
 elif [[ $1 = "concat" ]]; then
 	if [[ $2 = "single" ]]; then
@@ -195,7 +220,7 @@ elif [[ $1 = "concat" ]]; then
 			ds=$6
 			fitSingle $dt $size $parallel "${ds/.concat/}"
 		else
-			echo "fit concat single - invalid number of arguments ($#) (possible are: 2, 3, 5, 6)"
+			echo "fit concat single - invalid number of arguments ($#) (possible are: 2, 3, 5, 6)" >&2
 			exit
 		fi
 	elif [[ $2 = "all" ]]; then
@@ -215,75 +240,14 @@ elif [[ $1 = "concat" ]]; then
 			ds=$4
 			fitAll $dt "${ds/.concat/}"
 		else
-			echo "...."
+			echo "fit concat all - invalid number of arguments ($#) (possible are: 2, 3, 4)" >&2
 			exit
 		fi
 	else
-		echo "fit concat all - invalid number of arguments ($#) (possible are: 2, 3, 4)"
+		echo "fit concat - invalid concat type (single or all)" >&2
 		exit
 	fi
 else
-	echo "invalid fit type '$1' (possible are: aggr, concat)"
+	echo "invalid fit type '$1' (possible are: aggr, concat)" >&2
 	exit
 fi
-
-# if [[ ! -d $fitDir ]]; then mkdir -p $fitDir; fi
-
-# if [[ $2 = "single" ]]; then
-# 	if [[ $# = 2 ]]; then
-# 		for dt in $(ls $concatDir); do
-# 			for size in $(ls $concatDir/$dt | grep -v .concat); do
-# 				for parallel in $(ls $concatDir/$dt/$size); do
-# 					for ds in $(ls $concatDir/$dt/$size/$parallel); do
-# 						fitSingle $dt $size $parallel "${ds/.concat/}"
-# 					done
-# 				done
-# 			done
-# 		done
-# 	elif [[ $# = 3 ]]; then
-# 		dt=$3
-# 		for size in $(ls $concatDir/$dt | grep -v .concat); do
-# 			for parallel in $(ls $concatDir/$dt/$size); do
-# 				for ds in $(ls $concatDir/$dt/$size/$parallel); do
-# 					fitSingle $dt $size $parallel "${ds/.concat/}"
-# 				done
-# 			done
-# 		done
-# 	elif [[ $# = 5 ]]; then
-# 		dt=$3
-# 		size=$4
-# 		parallel=$5
-# 		for ds in $(ls $concatDir/$dt/$size/$parallel); do
-# 			fitSingle $dt $size $parallel "${ds/.concat/}"
-# 		done
-# 	elif [[ $# = 6 ]]; then
-# 		dt=$3
-# 		size=$4
-# 		parallel=$5
-# 		ds=$6
-# 		fitSingle $dt $size $parallel "${ds/.concat/}"
-# 	else
-# 		echo "fit single - invalid number of arguments ($#) (possible are: 2, 3, 5, 6)"
-# 	fi
-# elif [[ $2 = "all" ]]; then
-# 	if [[ $# = 2 ]]; then
-# 		for dt in $(ls $concatDir); do
-# 			for ds in $(ls $concatDir/$dt | grep .concat); do
-# 				fitAll $dt "${ds/.concat/}"
-# 			done
-# 		done
-# 	elif [[ $# = 3 ]]; then
-# 		dt=$3
-# 		for ds in $(ls $concatDir/$dt | grep .concat); do
-# 			fitAll $dt "${ds/.concat/}"
-# 		done
-# 	elif [[ $# = 4 ]]; then
-# 		dt=$3
-# 		ds=$4
-# 		fitAll $dt "${ds/.concat/}"
-# 	else
-# 		echo "fit all - invalid number of arguments ($#) (possible are: 2, 3, 4)"
-# 	fi
-# else
-# 	echo "invalid command type '$1' (possible are: single, all)"
-# fi
