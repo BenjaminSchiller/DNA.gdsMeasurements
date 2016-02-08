@@ -123,9 +123,11 @@ For each script, we simple list the possible arguments in the hope that they are
 
 ### `functions.sh`
 
-	./functions.sh aggr $size $parallel
+	./functions.sh aggr
+	./functions.sh aggr $dataType $size $parallel $dataStructure
 	
-	./functions.sh concat $size $parallel
+	./functions.sh concat
+	./functions.sh concat $dataType $size $parallel $dataStructure
 
 
 ### `plot.sh`
