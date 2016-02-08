@@ -2,7 +2,7 @@ analysis/data*
 analysis/git.log
 deploy/data*
 deploy/temp
-deploy/jobs.batch
+deploy/jobs.*
 analysis/functions*
 
 java/bin
