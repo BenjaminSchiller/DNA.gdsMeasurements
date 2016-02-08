@@ -57,7 +57,7 @@ if [[ $1 = "single" ]]; then
 		ds=$5
 		concatSingle $dt $size $parallel $ds
 	else
-		echo "concat single - invalid number of arguments ($#) (possible are: 1, 2, 4, 5)"
+		echo "concat single - invalid number of arguments ($#) (possible are: 1, 2, 4, 5)" >&2
 	fi
 elif [[ $1 = "all" ]]; then
 	if [[ $# = 1 ]]; then
@@ -76,8 +76,8 @@ elif [[ $1 = "all" ]]; then
 		ds=$3
 		concatAll $dt $ds
 	else
-		echo "concat all - invalid number of arguments ($#) (possible are: 1, 2, 3)"
+		echo "concat all - invalid number of arguments ($#) (possible are: 1, 2, 3)" >&2
 	fi
 else
-	echo "invalid command type '$1' (possible are: single, all)"
+	echo "invalid command type '$1' (possible are: single, all)" >&2
 fi

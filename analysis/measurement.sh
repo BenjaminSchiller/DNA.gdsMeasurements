@@ -10,7 +10,7 @@ function measure {
 		echo "$file exists"
 	else
 		echo "-> $file"
-		java -jar ../build/measurement.jar "dna.graph.datastructures.$4" $1 $2 $3 500 5 > $file
+		java -Xms512m -Xmx8g -jar measurement.jar "dna.graph.datastructures.$4" $1 $2 $3 500 5 > $file
 	fi
 }
 
@@ -23,6 +23,6 @@ if [[ $# = 5 ]]; then
 	run=$5
 	measure $dt $size $parallel $ds $run
 else
-	echo "expecting 5 arguments"
+	echo "expecting 5 arguments" >&2
 	exit
 fi

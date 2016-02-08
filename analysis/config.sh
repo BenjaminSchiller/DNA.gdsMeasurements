@@ -7,6 +7,8 @@ concatFitDir="data/concatFits"
 aggrDir="data/aggr"
 aggrFitDir="data/aggrFits"
 
+plotsAllDir="all"
+
 # # # # # # # # # # # # # #
 # .aggr
 # # # # # # # # # # # # # #
@@ -40,6 +42,24 @@ aggrFitDir="data/aggrFits"
 
 operations=(INIT ADD_SUCCESS ADD_FAILURE RANDOM_ELEMENT SIZE ITERATE CONTAINS_SUCCESS CONTAINS_FAILURE GET_SUCCESS GET_FAILURE REMOVE_SUCCESS REMOVE_FAILURE)
 
-dataStructures=(DArray DArrayList DHashSet DHashMap DHashTable)
+# dataStructures=(DArray DArrayList DHashSet DHashMap DHashTable)
+# DArray
+# DArrayList
+# DHashMap
+# DHashSet
+# DHashTable
+
+# dataStructures=(DLinkedList DHashArrayList)
+# DLinkedList
+# DHashArrayList
+
+# dataStructures=(DArrayDeque DHashMultimap DLinkedHashMultimap DEmpty)
+# DArrayDeque
+# DHashMultimap
+# DLinkedHashMultimap
+# DEmpty
+
+
+dataStructures=(DArray DArrayList DHashSet DHashMap DHashTable DLinkedList DHashArrayList)
 
 dataTypes=(Node Edge)

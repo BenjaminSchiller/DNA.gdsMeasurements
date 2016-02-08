@@ -48,5 +48,5 @@ elif [[ $# = 4 ]]; then
 	ds=$4
 	aggregate $dt $size $parallel $ds
 else
-	echo "invalid number of arguments given ($#) (expecting 0, 1, 3, 4)"
+	echo "invalid number of arguments given ($#) (expecting 0, 1, 3, 4)" >&2
 fi
