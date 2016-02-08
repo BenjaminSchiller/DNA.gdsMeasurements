@@ -1,4 +1,8 @@
-analysis/data
+analysis/data*
 analysis/git.log
+deploy/data*
+deploy/temp
+deploy/jobs.batch
+analysis/functions*
 
 java/bin
